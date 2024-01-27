@@ -13,8 +13,10 @@ def count_calls(method: Callable) -> Callable:
     @functools.wraps(method)
     def wrapper(*args, **kwargs):
         """inner function"""
+        key = method.__qualname__
+        args[0]._redis.incr(key)
 
-        return method(args)
+        return method(*args)
 
     return wrapper
 
@@ -27,13 +29,14 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """store input data in Redis"""
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str, fn: Optional[Callable]):
+    def get(self, key: str, fn: Optional[Callable] = None):
         """get value stored in redis provided the key"""
         value = self._redis.get(key)
         if value and fn:
