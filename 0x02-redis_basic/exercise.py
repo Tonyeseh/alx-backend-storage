@@ -1,8 +1,20 @@
 #!/usr/bin/env python3
 """exercise.py"""
 
+import functools
 import redis
+from typing import Callable, Union
 import uuid
+
+def count_calls(method: Callable) -> Callable:
+    """wrapper that counts number of call on methods in Cache"""
+
+    @functools.wraps(method)
+    def wrapper():
+        """inner function"""
+
+
+    return wrapper
 
 
 class Cache:
