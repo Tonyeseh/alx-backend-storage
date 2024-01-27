@@ -38,6 +38,21 @@ def call_history(method: Callable) -> Callable:
 
     return inner_func
 
+def replay(method: Callable) -> None:
+    """dispay the history of calls of a particular function"""
+    r = redis.Redis()
+
+    input_key = method.__qualname__ + ":inputs"
+    ouput_key = method.__qualname__ + ":outputs"
+
+    input_lst = r.lrange(input_key, 0, -1)
+    output_lst = r.lrange(ouput_key, 0, -1)
+
+    print("{} was called {} times:".format(method.__qualname__, len(output_lst)))
+    for inp, outp in zip(input_lst, output_lst):
+        print("{}(*{}) -> {}".format(method.__qualname__, inp.decode('utf-8'), outp.decode('utf-8')))
+
+
 
 class Cache:
     """Cache class"""
@@ -84,3 +99,8 @@ if __name__ == "__main__":
     for value, fn in TEST_CASES.items():
         key = cache.store(value)
         assert cache.get(key, fn=fn) == value
+
+    cache.store("foo")
+    cache.store("bar")
+    cache.store(42)
+    replay(cache.store)
