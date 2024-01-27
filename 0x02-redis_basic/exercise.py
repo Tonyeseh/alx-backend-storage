@@ -10,8 +10,10 @@ def count_calls(method: Callable) -> Callable:
     """wrapper that counts number of call on methods in Cache"""
 
     @functools.wraps(method)
-    def wrapper():
+    def wrapper(*args, **kwargs):
         """inner function"""
+
+        return method(args)
 
 
     return wrapper
@@ -24,7 +26,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
-    def store(self, data: str | bytes | int | float) -> str:
+    def store(self, data: Union[str, bytes, int, float]) -> str:
         """store input data in Redis"""
         key = str(uuid.uuid4())
         self._redis.set(key, data)
