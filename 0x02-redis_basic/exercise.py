@@ -38,6 +38,7 @@ def call_history(method: Callable) -> Callable:
 
     return inner_func
 
+
 def replay(method: Callable) -> None:
     """dispay the history of calls of a particular function"""
     r = redis.Redis()
@@ -48,10 +49,13 @@ def replay(method: Callable) -> None:
     input_lst = r.lrange(input_key, 0, -1)
     output_lst = r.lrange(ouput_key, 0, -1)
 
-    print("{} was called {} times:".format(method.__qualname__, len(output_lst)))
+    print(
+        "{} was called {} times:".format(
+            method.__qualname__,
+            len(output_lst)))
     for inp, outp in zip(input_lst, output_lst):
-        print("{}(*{}) -> {}".format(method.__qualname__, inp.decode('utf-8'), outp.decode('utf-8')))
-
+        print("{}(*{}) -> {}".format(method.__qualname__,
+              inp.decode('utf-8'), outp.decode('utf-8')))
 
 
 class Cache:
