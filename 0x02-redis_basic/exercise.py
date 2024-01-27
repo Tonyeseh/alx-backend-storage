@@ -41,6 +41,13 @@ class Cache:
 
         return value
 
+    def get_str(value: bytes) -> str:
+        """converts bytes to str"""
+        return value.decode('utf-8')
+
+    def get_int(value: bytes) -> int:
+        """converts bytes to int"""
+        return int(value)
 
 if __name__ == "__main__":
     cache = Cache()
