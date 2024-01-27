@@ -15,15 +15,16 @@ def cache_info(method: Callable) -> Callable:
     @functools.wraps(method)
     def inner_func(*args, **kwargs):
         """inner function"""
-        count_key = "count: {}".format(args[0])
-        response_key = "reponse: {}".format(args[0])
+        count_key = "count:{}".format(args[0])
+        response_key = "cached:{}".format(args[0])
 
         redis_cache.incr(count_key)
+        print(redis_cache.get(count_key).decode('utf-8'))
 
         if redis_cache.get(response_key) is None:
             redis_cache.setex(response_key, 10, method(*args))
 
-        return redis_cache.get(response_key)
+        return redis_cache.get(response_key).decode('utf-8')
 
     return inner_func
 
