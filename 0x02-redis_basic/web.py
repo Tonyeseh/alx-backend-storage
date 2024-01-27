@@ -21,9 +21,7 @@ def cache_info(method: Callable) -> Callable:
         redis_cache.incr(count_key)
 
         if redis_cache.get(response_key) is None:
-            print("printing non cached value")
-            redis_cache.set(response_key, method(*args), 10)
-        print("printing cached value")
+            redis_cache.setex(response_key, 10, method(*args))
 
         return redis_cache.get(response_key)
 
@@ -32,7 +30,8 @@ def cache_info(method: Callable) -> Callable:
 
 @cache_info
 def get_page(url: str) -> str:
-    """uses request to obtain the HTML content of a particular URL and returns it"""
+    """uses request to obtain the HTML content of
+    a particular URL and returns it"""
 
     return requests.get(url).text
 
